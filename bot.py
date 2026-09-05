@@ -18,12 +18,15 @@ client = TelegramClient(
 
 async def start_telegram():
     await client.start(bot_token=BOT_TOKEN)
-    print("Telegram bot connected.")
+    print("Telegram bot connected.", flush=True)
 
 
 def run_telegram():
-    client.loop.run_until_complete(start_telegram())
-    client.run_until_disconnected()
+    try:
+        client.loop.run_until_complete(start_telegram())
+        client.run_until_disconnected()
+    except Exception as e:
+        print(f"TELEGRAM ERROR: {type(e).__name__}: {e}", flush=True)
 
 
 @app.route("/")
@@ -36,7 +39,9 @@ def home():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "healthy"})
+    return jsonify({
+        "status": "healthy"
+    })
 
 
 threading.Thread(target=run_telegram, daemon=True).start()
